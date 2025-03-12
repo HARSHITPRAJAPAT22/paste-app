@@ -3,16 +3,22 @@ import { Hono } from "hono";
 import { withAccelerate } from "@prisma/extension-accelerate";// Import Zod schemas
 //@ts-ignore
 import {createPostInput, updatePostInput } from 'harshit221202';
+import dotenv from "dotenv";
+dotenv.config();
 export const pasteRouter = new Hono<{
-  Bindings: { DATABASE_URL: string };
+  Bindings: { DATABASE_URL: string ,
+    JWT_SECRET : string
+  };
   Variables: { userId: string };
 }>();
 
-const prisma = new PrismaClient().$extends(withAccelerate());
 
 /* ------------------------------- Create Paste ------------------------------- */
 pasteRouter.post("/create", async (c) => {
-
+  const prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+  console.log(c.env.DATABASE_URL);
   const userId = c.get("userId");
   if (!userId) return c.json({ error: "Unauthorized" }, 401);
 
@@ -32,6 +38,9 @@ pasteRouter.post("/create", async (c) => {
 
 /* ---------------------------- Get Paste by ID ---------------------------- */
 pasteRouter.get("/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+  }).$extends(withAccelerate());
   const pasteId = c.req.param("id");
 
   const paste = await prisma.paste.findUnique({ where: { id: pasteId } });
@@ -43,6 +52,9 @@ pasteRouter.get("/:id", async (c) => {
 
 /* ---------------------- Get All Pastes by a User ---------------------- */
 pasteRouter.get("/user/:userId", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+  }).$extends(withAccelerate());
   const userId = c.req.param("userId");
 
   const pastes = await prisma.paste.findMany({
@@ -55,6 +67,9 @@ pasteRouter.get("/user/:userId", async (c) => {
 
 /* ---------------------------- Update a Paste ---------------------------- */
 pasteRouter.put("/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+  }).$extends(withAccelerate());
   const userId = c.get("userId");
   if (!userId) return c.json({ error: "Unauthorized" }, 401);
 
@@ -81,6 +96,9 @@ pasteRouter.put("/:id", async (c) => {
 
 /* ---------------------------- Delete a Paste ---------------------------- */
 pasteRouter.delete("/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+  }).$extends(withAccelerate());
   const userId = c.get("userId");
   if (!userId) return c.json({ error: "Unauthorized" }, 401);
 

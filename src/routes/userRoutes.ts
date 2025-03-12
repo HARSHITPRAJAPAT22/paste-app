@@ -3,7 +3,8 @@ import { Hono } from "hono";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { hash, compare } from "bcryptjs";
 import { sign } from "hono/jwt";
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
 
 
 export const userRouter = new Hono<{
@@ -11,14 +12,20 @@ export const userRouter = new Hono<{
   Variables: { userName: string };
 }>();
 
-const prisma = new PrismaClient().$extends(withAccelerate());
+
+
 
 /* -------------------------- User Authentication -------------------------- */
 
 // Register a new user
 userRouter.post("/register", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+  console.log(process.env.DATABASE_URL);
+  console.log(c.env.DATABASE_URL);
   const { userName, password } = await c.req.json();
-
+  
   if (!userName || !password) {
     return c.json({ error: "Username and password are required" }, 400);
   }
@@ -39,6 +46,9 @@ userRouter.post("/register", async (c) => {
 
 // Login a user
 userRouter.post("/login", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+  }).$extends(withAccelerate());
   const { userName, password } = await c.req.json();
   const user = await prisma.user.findUnique({ where: { userName } });
   if (!user) return c.json({ error: "User not found" }, 404);
@@ -46,7 +56,7 @@ userRouter.post("/login", async (c) => {
   if (!isValidPassword) return c.json({ error: "Invalid credentials" }, 401);
 
   // Generate JWT Token
-  const jwtSecret = c.env.JWT_SECRET || process.env.JWT_SECRET;
+  const jwtSecret = process.env.JWT_SECRET ;
   if (!jwtSecret) {
     console.error("JWT_SECRET is missing!");
     return c.json({ error: "Server misconfiguration: JWT_SECRET is missing" }, 500);

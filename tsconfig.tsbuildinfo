@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/routes/middleware.ts","./src/routes/pasteroutes.ts","./src/routes/userroutes.ts"],"version":"5.8.2"}
+{"root":["./src/index.ts","./src/routes/pasteroutes.ts","./src/routes/userroutes.ts"],"version":"5.7.3"}

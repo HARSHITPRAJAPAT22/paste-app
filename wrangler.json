@@ -1,0 +1,9 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "paste-app",
+    "main": "src/index.ts",
+    "compatibility_date":"2025-03-11",
+    "compatibility_flags": ["nodejs_compat"]
+    
+  }
+  
